@@ -1,0 +1,21 @@
+# Fork-authored (CUSTOM-20260923-001). Upstream has no .gitattributes, and this machine has
+# core.autocrlf=true (system AND user level). Without this file a fresh clone checks out *.sh
+# as CRLF and `sh script.sh` misbehaves, and every build-regenerated file shows a phantom
+# "modified" status. Upstream blobs are already LF in the index, so adding this introduces no
+# renormalization noise.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.wasm binary
+*.vsix binary
+
+# Windows-native script formats: cmd.exe and Windows PowerShell expect CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf

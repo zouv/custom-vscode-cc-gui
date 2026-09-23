@@ -1,9 +1,9 @@
 {
-  "name": "vscode-cc-gui",
-  "displayName": "CCGUI / CC GUI（Claude Codex OpenCode Kimi）",
+  "name": "custom-vscode-cc-gui",
+  "displayName": "CCGUI / CC GUI（custom fork · Claude Codex OpenCode Kimi）",
   "description": "CCGUI / CC GUI — independent open-source GUI for Claude Code, Codex, OpenCode, Kimi, Grok and more (unofficial)",
-  "version": "0.1.5",
-  "publisher": "MossX",
+  "version": "0.1.5-custom.1",
+  "publisher": "zouv",
   "author": {
     "name": "MossX"
   },

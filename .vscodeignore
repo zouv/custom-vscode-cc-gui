@@ -54,3 +54,27 @@ ai-bridge/node_modules/sql.js/.jsdoc*
 ai-bridge/node_modules/sql.js/.nojekyll
 ai-bridge/node_modules/sql.js/logo.svg
 ai-bridge/node_modules/sql.js/AUTHORS
+
+# [CUSTOM-BEGIN] CUSTOM-20260923-001 - never ship fork tooling/docs in the VSIX
+# Upstream ships these; without this block the fork's registry, code map, skills and
+# scripts all land inside the published VSIX. Plain ignores only (no "!") so the vsce
+# force-include semantics documented above cannot re-expose them.
+CUSTOMIZATIONS/**
+.agents/**
+AGENTS.md
+.gitattributes
+dist/vsix/**
+
+# vsce packages the WORKING TREE, not git — it never reads .gitignore. So any untracked
+# local tool/session directory on the packager's machine leaks into the VSIX. The
+# .claude/explore-results/ case is not hypothetical: the first CUSTOM-20260923-001 build
+# shipped 5 agent transcripts (~142 KB) before this rule existed.
+.claude/**
+.zcode/**
+.cursor/**
+.codex/**
+.mossx/**
+.ace-tool/**
+.continue/**
+.windsurf/**
+# [CUSTOM-END] CUSTOM-20260923-001

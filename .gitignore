@@ -99,3 +99,13 @@ settings.local.json
 .turbo/
 .vite/
 .npm-cache
+
+# [CUSTOM-BEGIN] CUSTOM-20260923-001 - fork-owned ignore policy for session-local scratch
+# Unlike custom-marktext, this upstream does NOT ignore .agents/ and DOES ignore .claude/
+# wholesale (line 47), so .agents/skills/** is tracked with no "!" exemption needed here.
+# These two lines are a narrow re-assertion of the reference block: they are what keeps
+# scratch out of git if anyone later adds "!.claude/" to track a project-level
+# .claude/settings.json (git cannot re-include a file under an excluded directory).
+.claude/explore-results/
+.zcode/plans/
+# [CUSTOM-END] CUSTOM-20260923-001
