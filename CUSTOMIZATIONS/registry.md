@@ -3,8 +3,8 @@ current_upstream_version: 'main@8ba39913'
 current_upstream_commit: '8ba39913b8cc2bef4c0ad3ea975f078e2ca5f1a9'
 custom_version: 'v0.1.5-custom.1'
 last_merge_date: '2026-09-23'
-last_release_version: ''
-last_release_date: ''
+last_release_version: 'v0.1.5-custom.1'
+last_release_date: '2026-10-09'
 vendor_branch: 'vendor/main'
 upstream_remote: 'https://github.com/hpstream/vscode-cc-gui.git'
 ---
@@ -35,7 +35,7 @@ upstream_remote: 'https://github.com/hpstream/vscode-cc-gui.git'
 - **当前基于上游 Commit**：8ba39913b8cc2bef4c0ad3ea975f078e2ca5f1a9
 - **当前 Vendor 分支**：vendor/main
 - **最近一次上游合并**：2026-09-23（初始化）
-- **最近一次发布版本**：（尚未发布）
+- **最近一次发布版本**：v0.1.5-custom.1（2026-10-09，首个发布）
 
 ---
 
@@ -73,6 +73,22 @@ upstream_remote: 'https://github.com/hpstream/vscode-cc-gui.git'
 ---
 
 ## 变更日志
+
+### 2026-10-09 - CUSTOM-20261009-004（发布 `v0.1.5-custom.1`：首个 GitHub Release）
+
+- **功能**：首个自定义版本发布（不是代码改动，是登记动作）
+- **改动文件**：`CUSTOMIZATIONS/release-notes/v0.1.5-custom.1.md`（新增）、`CUSTOMIZATIONS/registry.md`（frontmatter 的 `last_release_version`/`last_release_date` + 仓库信息节）
+- **详细说明**：
+  - 版本号取 `<上游版本>-custom.<N>`，N 从 1 起（此前无任何 `v*-custom.*` tag）；`package.json` 的 `version` 早在初始化时就是 `0.1.5-custom.1`，本次**无需 bump**
+  - **标 `--prerelease`**：基线 `main@8ba39913` 不是正式 tag——`git describe --tags 8ba39913` = `0.1.5-1-g8ba3991`（tag `0.1.5` 之后的一个 merge commit）
+  - 发布走 `CUSTOMIZATIONS/scripts/publish-release.mjs`（从 `origin` 推导仓库，避开双 remote 下 gh 默认打到上游的坑；pitfall #7）
+  - 本次发布覆盖 CUSTOM-20260923-001（基建）、20261009-002（`dev:host`）、20261009-003（改名 `CC GUI (Custom)` + `ccgc.*` 命名空间）三批改动
+- **验证方式**：
+  - `manager.sh typecheck`：上游基线 8 错、无新增；root 测试 236 + 239 + 4 全过；`check-registry.sh` 全绿
+  - 打包产物内容断言 14/14 通过：177 文件 / 3.48 MB，sha256 `d51cc1db…`；**解包核验 manifest**——`displayName=CC GUI (Custom)`、13 个 `ccgc.*` 命令、3 个 `ccgc.*` 配置键、容器 `ccgc-activity`/`ccgc-secondary`、`ccGui` 残留 0
+  - `gh repo view` 确认解析到 `zouv/custom-vscode-cc-gui`
+  - `publish-release.mjs --dry-run` 先干跑，正式发布后 `gh release view` 核对（draft=false / prerelease=true / 2 个资产 uploaded）
+- **基于上游版本**：main@8ba39913
 
 ### 2026-10-09 - CUSTOM-20261009-003（显示名 `CC GUI (Custom)` + 内部命名空间全量改名 `ccGui.*` → `ccgc.*`）
 
