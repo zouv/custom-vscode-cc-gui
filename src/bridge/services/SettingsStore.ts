@@ -1,3 +1,6 @@
+// [CUSTOM-BEGIN] CUSTOM-20261009-003 - 全局命名空间重命名 ccGui.* → ccgc.*：本文件内的命令 id / 视图 id / 配置键 / 上下文键 / 输出通道名已改名，好与上游 vscode-cc-gui 同时安装不再冲突。
+// 上游合并后若本文件出现新的 ccGui.* 引用，需按 registry.md 的命名空间映射重新应用。
+// [CUSTOM-END] CUSTOM-20261009-003
 import * as path from 'path';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
@@ -161,7 +164,7 @@ export class SettingsStore {
     valid: boolean;
     error?: string;
   } {
-    const configured = (vscode.workspace.getConfiguration('ccGui').get<string>('nodePath') ?? '').trim();
+    const configured = (vscode.workspace.getConfiguration('ccgc').get<string>('nodePath') ?? '').trim();
     const configuredNode =
       configured && fs.existsSync(configured) && isLikelyNodeExecutable(configured) ? configured : '';
     const runtimePath = NodeDetector.find(this.context) ?? '';
@@ -182,7 +185,7 @@ export class SettingsStore {
     const parsedPath = this.extractJsonField(content, 'path') ?? content;
     const nodePath = parsedPath.trim();
     await vscode.workspace
-      .getConfiguration('ccGui')
+      .getConfiguration('ccgc')
       .update('nodePath', nodePath, vscode.ConfigurationTarget.Global);
     return this.getNodePathPayload();
   }
@@ -405,15 +408,15 @@ export class SettingsStore {
     return this.state.update('ccg.status_bar_widget_enabled', this.extractBooleanField(content, 'statusBarWidgetEnabled', true));
   }
 
-  /** VS Code setting `ccGui.enableDebugLog` (default false). */
+  /** VS Code setting `ccgc.enableDebugLog` (default false). */
   getEnableDebugLog(): boolean {
-    return vscode.workspace.getConfiguration('ccGui').get<boolean>('enableDebugLog') === true;
+    return vscode.workspace.getConfiguration('ccgc').get<boolean>('enableDebugLog') === true;
   }
 
   setEnableDebugLog(content: string): Thenable<void> {
     const enabled = this.extractBooleanField(content, 'enableDebugLog', false);
     return vscode.workspace
-      .getConfiguration('ccGui')
+      .getConfiguration('ccgc')
       .update('enableDebugLog', enabled, vscode.ConfigurationTarget.Global);
   }
 

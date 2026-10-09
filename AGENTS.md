@@ -41,9 +41,10 @@ sh CUSTOMIZATIONS/scripts/manager.sh typecheck # tsc --noEmit
 sh CUSTOMIZATIONS/scripts/manager.sh package   # 打 VSIX（含内容断言 + SHA256SUMS）
 sh CUSTOMIZATIONS/scripts/manager.sh check     # typecheck + test
 sh CUSTOMIZATIONS/scripts/check-registry.sh    # 登记一致性自检（必须全绿）
+npm run dev:host [-- <工作区目录>]              # 构建 + 启动开发宿主窗口（手工验收，不下断点）
 ```
 
-真实开发用 **VS Code 按 F5**（`.vscode/launch.json`，preLaunchTask 走 `build:debug`）。`manager.sh watch` 只监听扩展宿主。
+真实开发用 **VS Code 按 F5**（`.vscode/launch.json`，preLaunchTask 走 `build:debug`）。`npm run dev:host` 是它的无调试器版（同一套 `.vscode-dev/` 隔离 profile），可传任意目录当工作区；`manager.sh watch` 只监听扩展宿主。
 
 **不要直接用 `npm run test:ext`**：Windows 下 npm 经 cmd.exe 执行，单引号被当字面量，glob 匹配 0 文件 → **静默假绿**（输出 `1..0` 但退出码 0）。见 pitfalls #10。
 
@@ -97,7 +98,7 @@ Skill 定义位于 `.agents/skills/`（跨工具共享的工作区级标准路�
 
 ```
 src/                        # 扩展宿主（esbuild → dist/extension.js）
-  extension.ts              # activate：13 个 ccGui.* 命令、2 个 view provider
+  extension.ts              # activate：13 个 ccgc.* 命令、2 个 view provider
   panel.ts                  # CcGuiPanel：webview 宿主、HTML/CSP/引导脚本注入
   bridge.ts                 # BridgeServer：spawn 守护进程、消息总控
   bridge/{handlers,services}/  # 25 handler + 25 service

@@ -10,7 +10,7 @@
 
 1. 本仓库是**三个独立的 npm 包**（根 / `webview/` / `ai-bridge/`），没有 workspace 根——依赖必须分别安装（见 pitfalls #3）。
 2. 上游**零 CI**（无 `.github/`），发布完全靠本地脚本（见「发布路径」）。
-3. 扩展 ID 已改为 `zouv.custom-vscode-cc-gui`，但内部 `ccGui.*` / `cc-gui-*` 命名空间**刻意不动**（见 registry 总览 `package.json` 行）。
+3. 扩展 ID 已改为 `zouv.custom-vscode-cc-gui`，内部命名空间也从上游的 `ccGui.*` / `cc-gui-*` 全量改名为 `ccgc.*` / `ccgc-*`（CUSTOM-20261009-003，见 registry 总览 `package.json` 行）——显示名 `CC GUI (Custom)`，可与上游插件同时安装而不冲突。
 
 ## 目录结构
 
@@ -24,7 +24,7 @@ CUSTOMIZATIONS/
 ├── release-notes/   # 各自定义版本的发布说明归档
 ├── src/             # 新增的自定义源码（独立模块，通过入口挂载）
 ├── patches/         # 对上游文件的补丁
-└── scripts/         # manager / package-vsix / check-registry / init-repo / list-custom / sync-vendor / publish-release
+└── scripts/         # manager / package-vsix / check-registry / dev-host / init-repo / list-custom / sync-vendor / publish-release
 ```
 
 核心约定：**一处规则（README.md）、一处账本（registry.md）、一份代码地图（architecture.md）、一份坑点库（docs/pitfalls.md）**。规则改动只改本文件；改动登记只写 registry.md；代码结构变化同步 architecture.md；踩坑沉淀进 docs/pitfalls.md；自定义代码优先放 src/。

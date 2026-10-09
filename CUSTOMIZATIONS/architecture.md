@@ -52,6 +52,7 @@ webview 用户操作 → window.sendToJava('event:content')
 | 历史 / Codex 迁移 | `src/bridge/services/HistoryService.ts`、`codexHistoryTransform.ts`、`GrokHistoryReader.ts`、`historyEntrypoint.ts` | UI 组件 |
 | 权限 / 审批 | `ai-bridge/permission-*.js`、`ai-bridge/services/claude/permission-mode.js`、`src/bridge/services/PermissionIpcService.ts`、`src/permissionApprovalUtils.ts` | 打包脚本 |
 | 打包 / 发布 | `CUSTOMIZATIONS/scripts/manager.sh`、`package-vsix.sh`、`.vscodeignore`、`AGENTS.md` | 除 `package.json` 版本外的所有源码 |
+| 起开发宿主 / 本地验收 | `CUSTOMIZATIONS/scripts/dev-host.mjs`（`npm run dev:host`，`build:debug` + 启动宿主，宿主环境对齐 `.vscode/launch.json`）、`package.json` 的 `scripts` | `webview/`、`ai-bridge/` 内部 |
 | **i18n** | **两套系统，别混**：宿主侧 `package.nls*.json`（仅清单文案）；webview 侧 `webview/src/i18n/`（i18next，10 语言，默认 zh） | 另一侧的对应文件 |
 
 ## §1 文件职责表
@@ -67,14 +68,14 @@ webview 用户操作 → window.sendToJava('event:content')
 | `src/bridge/activeFileSync.ts` | `shouldSyncActiveFileToWebview` / `formatActiveFileSelectionInfo` | 纯函数：当前文件同步策略与展示文案 |
 | `src/cli/cliTools.ts` | `CliToolId` / `CLI_ONLY_PROVIDERS` / `CLI_TOOL_DEFINITIONS` | CLI 型 provider 的分类学（只定义，不安装） |
 | `src/cli/CliStatusDetector.ts` | `CliStatusDetector` | 探测各 CLI 是否安装与版本（5s 超时、30s 缓存） |
-| `src/nodeDetector.ts` | `NodeDetector.find` / `.findNpm` | 解析 Node 二进制：`ccGui.nodePath` → 常见路径 → PATH |
+| `src/nodeDetector.ts` | `NodeDetector.find` / `.findNpm` | 解析 Node 二进制：`ccgc.nodePath` → 常见路径 → PATH |
 | `src/nodeRequirements.ts` | `MIN_NODE_MAJOR_VERSION`(=20) / `isNodeVersionSupported` | **Node 版本要求的唯一来源**，`_startBridge` 据此拒绝启动 |
-| `src/setupWizard.ts` | `SetupWizardService` / `registerSetupWizard` | 首启向导；注册第 13 个命令 `ccGui.runSetupWizard` |
+| `src/setupWizard.ts` | `SetupWizardService` / `registerSetupWizard` | 首启向导；注册第 13 个命令 `ccgc.runSetupWizard` |
 | `src/commitMessage.ts` | `CommitMessageService` | 经 `bridge.requestAiText` 生成提交信息 |
 | `src/quickFix.ts` / `quickFixPrompt.ts` | `ClaudeQuickFixProvider` / `buildQuickFixPrompt` | 诊断 → CodeAction → 命令 |
 | `src/sessionTemplate.ts` | `SessionTemplateService` | 会话模板（globalState `ccg.session_templates`） |
 | `src/language.ts` | `SUPPORTED_UI_LANGUAGES` / `resolveLanguageConfig` | VS Code locale → 10 种 UI 语言的映射 |
-| `src/debugOutputChannel.ts` | `createDebugGatedOutputChannel` | 受 `ccGui.enableDebugLog` 门控的输出通道 |
+| `src/debugOutputChannel.ts` | `createDebugGatedOutputChannel` | 受 `ccgc.enableDebugLog` 门控的输出通道 |
 
 `src/bridge/handlers/`（25 个，每个一类事件）：`SessionHandler`(chat 传输)、`SettingsHandler`(最大，~70 事件)、`ProviderHandler`(provider CRUD)、`McpServerHandler`/`McpMarketplaceHandler`、`HistoryHandler`、`DiffHandler`、`UndoFileHandler`、`FileHandler`、`AgentHandler`、`SkillHandler`、`PromptHandler`、`PermissionHandler`、`DependencyHandler`、`NodeProcessHandler`、`ClipboardHandler`、`WindowEventHandler`、`CliStatusHandler`/`CliModelsHandler`、`ContextUsageHandler`、`RewindHandler`、`UsageStatisticsHandler`、`CustomModelPricingHandler`、`TokenTrackerHandler`、`PromptEnhancerHandler`、`helpers.ts`。
 
@@ -114,7 +115,7 @@ webview 用户操作 → window.sendToJava('event:content')
 | 想做什么 | 去哪 |
 | --- | --- |
 | 加一个命令 | `package.json` `contributes.commands` + `src/extension.ts` `activate` 内注册（或 `setupWizard.ts` 那样单独注册）+ `package.nls{,.zh-cn,.zh-tw}.json` **三份** |
-| 加一个配置项 | `package.json` `contributes.configuration` + 三份 nls；读取处用 `getConfiguration('ccGui')`（见 `SettingsStore`） |
+| 加一个配置项 | `package.json` `contributes.configuration` + 三份 nls；读取处用 `getConfiguration('ccgc')`（见 `SettingsStore`） |
 | 加一个 provider | `ai-bridge/channels/<name>-channel.js` + `ai-bridge/services/<name>/message-service.js` + `channel-manager.js` 的 `providerHandlers` **与** `daemon.js` 的 `switch(provider)`（两处！）+ `src/cli/cliTools.ts` |
 | 改 webview ↔ 宿主协议 | 出站 `webview/src/utils/bridge.ts` + `global.d.ts`；入站 `src/bridge.ts` `handleWebviewMessage` + `MessageDispatcher` + 对应 handler；HTML 侧引导脚本在 `panel.ts` `_getHtml` |
 | 改流式输出 / 重复内容 | `src/bridge.ts` `_handleDaemonLine` + `src/bridge/services/textChunkDedupe.ts` + `scripts/bridge-streaming-invariant.test.mjs` |
@@ -133,17 +134,17 @@ webview 用户操作 → window.sendToJava('event:content')
 webview `sendToJava('send_message:…')` → `_bindWebview` 的 `onDidReceiveMessage` → `BridgeServer.handleWebviewMessage`（解析 `event:content`）→ `MessageDispatcher.dispatch` → `SessionHandler` → `_sendToBridge`，按 `METHOD_MAP` 变成 `<provider>.send` 写 stdin → daemon `processRequest` 按第一个 `.` 拆 provider/command → channel → SDK 或 CLI 子进程 → stdout 每行 `{id,line}` → `_handleDaemonLine` 按 `[CONTENT_DELTA]`/`[THINKING_DELTA]`/`[STREAM_START]`/`[SESSION_ID]` 等标记分发 → `broadcast`/`_postToActiveWebview` → webview 的 `window.onStreamXxx`。
 
 ### 3.3 守护进程生命周期与 Node 探测
-`BridgeServer._startBridge` → `NodeDetector.find`（优先 `ccGui.nodePath`）→ `readNodeVersion` + `isNodeVersionSupported`（`MIN_NODE_MAJOR_VERSION=20`，不满足直接拒绝 spawn）→ 剥掉 `HTTP(S)_PROXY*` → `cp.spawn(nodePath,[ai-bridge/daemon.js])`。`_restartBridgeDaemon` 由 webview 的 `set_node_path`/`set_claude_cli_path`、以及 `restart_node_daemon` 触发——**直接改 VS Code 设置里的 `ccGui.nodePath` 并不会重启 daemon**（只有 `enableDebugLog` 变了才走 `onDidChangeConfiguration`）。daemon 侧有 PPID 轮询自杀，防孤儿进程。
+`BridgeServer._startBridge` → `NodeDetector.find`（优先 `ccgc.nodePath`）→ `readNodeVersion` + `isNodeVersionSupported`（`MIN_NODE_MAJOR_VERSION=20`，不满足直接拒绝 spawn）→ 剥掉 `HTTP(S)_PROXY*` → `cp.spawn(nodePath,[ai-bridge/daemon.js])`。`_restartBridgeDaemon` 由 webview 的 `set_node_path`/`set_claude_cli_path`、以及 `restart_node_daemon` 触发——**直接改 VS Code 设置里的 `ccgc.nodePath` 并不会重启 daemon**（只有 `enableDebugLog` 变了才走 `onDidChangeConfiguration`）。daemon 侧有 PPID 轮询自杀，防孤儿进程。
 
 ### 3.4 打包链
 `manager.sh package` → `package-vsix.sh`（三包依赖预检）→ `vsce package --no-dependencies` → **自动执行 `vscode:prepublish` = `npm run build`**（esbuild 打 `src/extension.ts` → `dist/extension.js`；`webview` 内先 `prebuild` 生成 version/changelog，再 `tsc && vite build`）→ 输出 `dist/vsix/<name>-<version>.vsix` → **`unzip -Z1` 内容断言**（必须含 dist/webview-dist/ai-bridge/sql.js；必须不含 fork 文档与本地工具目录）→ 生成 `SHA256SUMS.txt`。
 
 ## §4 数据契约铁律
 
-1. **`ccGui.*` 配置节名与 `cc-gui-*` view id 必须保持稳定**——`getConfiguration('ccGui')`、`contributes`、用户已有设置都依赖它。fork 刻意未改这些命名空间（见 registry `package.json` 行），改名会让两插件都无法共存且丢失用户配置。
+1. **`ccgc.*` 配置节名与 `ccgc-*` view id 必须保持稳定**（CUSTOM-20261009-003 起，取代上游的 `ccGui.*` / `cc-gui-*`）——`getConfiguration('ccgc')`、`contributes`、三份 nls 的键名、用户已有设置都依赖它。**不要改回 `ccGui.*`**：那会与上游 vscode-cc-gui 撞命名空间（同时安装时重复贡献、互相抢配置）。上游合并若带回 `ccGui.*` 引用，按文件头标记块重贴重命名。
 2. **`package.nls{,.zh-cn,.zh-tw}.json` 三份必须键对齐**——新增清单文案要同时补三份。
 3. **webview 的 i18n 是另一套**（`webview/src/i18n/locales/*.json`，10 语言，默认 zh），别把两套混在一起改。
 4. **打包时 `ai-bridge/node_modules` 与 `webview/dist/**` 必须存在**——前者靠 `.vscodeignore` 白名单（非依赖检测），后者靠 `!webview/dist/**`；`package-vsix.sh` 已断言。
 5. **webview 里的 `version.ts` / `changelog.ts` 是生成物**——改版本改根 `package.json` 的 version，改 changelog 改根 `CHANGELOG.md`（表头格式 `##### **<日期>（v<版本>）**`）。
 6. **`[CUSTOM-BEGIN]` 块必须在上游合并后存活**——按函数/组件名重定位，不按行号。
-7. **已知既有缺口**（非本 fork 引入，勿顺手"修"成无标记改动）：`ccGui.autoSyncActiveFile` 在 `package.json` 中声明但代码里无人读取（真正的开关是 globalState 的 `auto_open_file`）；`panelHelpers.parseBridgeEvent`/`isBridgeEvent` 仅有测试引用；`webview/scripts/copy-dist.mjs` 是自我拷贝的空操作。
+7. **已知既有缺口**（非本 fork 引入，勿顺手"修"成无标记改动）：`ccgc.autoSyncActiveFile` 在 `package.json` 中声明但代码里无人读取（真正的开关是 globalState 的 `auto_open_file`）；`panelHelpers.parseBridgeEvent`/`isBridgeEvent` 仅有测试引用；`webview/scripts/copy-dist.mjs` 是自我拷贝的空操作。

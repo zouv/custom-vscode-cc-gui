@@ -1,9 +1,12 @@
+// [CUSTOM-BEGIN] CUSTOM-20261009-003 - 全局命名空间重命名 ccGui.* → ccgc.*：本文件内的命令 id / 视图 id / 配置键 / 上下文键 / 输出通道名已改名，好与上游 vscode-cc-gui 同时安装不再冲突。
+// 上游合并后若本文件出现新的 ccGui.* 引用，需按 registry.md 的命名空间映射重新应用。
+// [CUSTOM-END] CUSTOM-20261009-003
 import * as cp from 'child_process';
 
 /**
  * Minimum Node.js major version required to run the CC GUI ai-bridge / Claude SDK.
  * Users may keep an older Node (e.g. 16) for project work; they should install
- * Node 20+ separately and set `ccGui.nodePath` to that binary only.
+ * Node 20+ separately and set `ccgc.nodePath` to that binary only.
  */
 export const MIN_NODE_MAJOR_VERSION = 20;
 
@@ -43,7 +46,7 @@ export function formatNodeRequirementError(
   if (!nodePath) {
     return (
       `Node.js not found. Install Node.js v${min}+ separately, then set the full path in ` +
-      `CC GUI Settings → Basic → Environment (ccGui.nodePath). ` +
+      `CC GUI Settings → Basic → Environment (ccgc.nodePath). ` +
       `Your project can keep using an older Node.`
     );
   }

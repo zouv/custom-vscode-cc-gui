@@ -1,3 +1,6 @@
+// [CUSTOM-BEGIN] CUSTOM-20261009-003 - 全局命名空间重命名 ccGui.* → ccgc.*：本文件内的命令 id / 视图 id / 配置键 / 上下文键 / 输出通道名已改名，好与上游 vscode-cc-gui 同时安装不再冲突。
+// 上游合并后若本文件出现新的 ccGui.* 引用，需按 registry.md 的命名空间映射重新应用。
+// [CUSTOM-END] CUSTOM-20261009-003
 import * as cp from 'child_process';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -82,7 +85,7 @@ export class SetupWizardService {
       });
       const trimmed = input?.trim();
       if (trimmed) {
-        await vscode.workspace.getConfiguration('ccGui').update('nodePath', trimmed, vscode.ConfigurationTarget.Global);
+        await vscode.workspace.getConfiguration('ccgc').update('nodePath', trimmed, vscode.ConfigurationTarget.Global);
         vscode.window.showInformationMessage(`Saved custom Node path: ${trimmed}`);
       }
     } else if (action === 'Open Node.js website') {
@@ -130,7 +133,7 @@ export class SetupWizardService {
     );
     if (action === 'Open Side Panel') {
       try {
-        await vscode.commands.executeCommand('ccGui.mainView.focus');
+        await vscode.commands.executeCommand('ccgc.mainView.focus');
       } catch { /* ignore */ }
     }
   }
@@ -179,7 +182,7 @@ export function registerSetupWizard(context: vscode.ExtensionContext): SetupWiza
   const wizard = new SetupWizardService(context);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('ccGui.runSetupWizard', async () => {
+    vscode.commands.registerCommand('ccgc.runSetupWizard', async () => {
       await wizard.run();
     }),
   );
