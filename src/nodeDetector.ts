@@ -1,3 +1,6 @@
+// [CUSTOM-BEGIN] CUSTOM-20261009-003 - 全局命名空间重命名 ccGui.* → ccgc.*：本文件内的命令 id / 视图 id / 配置键 / 上下文键 / 输出通道名已改名，好与上游 vscode-cc-gui 同时安装不再冲突。
+// 上游合并后若本文件出现新的 ccGui.* 引用，需按 registry.md 的命名空间映射重新应用。
+// [CUSTOM-END] CUSTOM-20261009-003
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as cp from 'child_process';
@@ -16,7 +19,7 @@ import {
  */
 export class NodeDetector {
   static find(context: vscode.ExtensionContext): string | undefined {
-    const config = vscode.workspace.getConfiguration('ccGui');
+    const config = vscode.workspace.getConfiguration('ccgc');
     const customPath = (config.get<string>('nodePath') ?? '').trim();
     if (customPath && fs.existsSync(customPath) && isLikelyNodeExecutable(customPath)) {
       return customPath;

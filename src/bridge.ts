@@ -1,3 +1,6 @@
+// [CUSTOM-BEGIN] CUSTOM-20261009-003 - 全局命名空间重命名 ccGui.* → ccgc.*：本文件内的命令 id / 视图 id / 配置键 / 上下文键 / 输出通道名已改名，好与上游 vscode-cc-gui 同时安装不再冲突。
+// 上游合并后若本文件出现新的 ccGui.* 引用，需按 registry.md 的命名空间映射重新应用。
+// [CUSTOM-END] CUSTOM-20261009-003
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -116,7 +119,7 @@ export class BridgeServer {
     // patch could be captured as the "real" writer and silence logs forever
     // until the switch was toggled after a full channel recreate.
     const gated = createDebugGatedOutputChannel(
-      'CC GUI',
+      'CC GUI (Custom)',
       () => this._debugLogEnabled,
       (name) => vscode.window.createOutputChannel(name),
     );
@@ -128,12 +131,12 @@ export class BridgeServer {
     context.subscriptions.push(this._rawLog);
     this._applyDebugLogSetting(false);
     this._configListener = vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('ccGui.enableDebugLog')) {
+      if (e.affectsConfiguration('ccgc.enableDebugLog')) {
         this._applyDebugLogSetting(true);
         // Keep webview toggle in sync when changed from VS Code Settings UI.
         if (this._webview) {
           const enabled =
-            vscode.workspace.getConfiguration('ccGui').get<boolean>('enableDebugLog') === true;
+            vscode.workspace.getConfiguration('ccgc').get<boolean>('enableDebugLog') === true;
           this._callWebviewJson(this._webview, 'updateEnableDebugLog', { enableDebugLog: enabled });
         }
       }
@@ -142,7 +145,7 @@ export class BridgeServer {
     this._workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
     this._statusBarWidgetEnabled = context.globalState.get<boolean>('ccg.status_bar_widget_enabled', true);
     this._statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-    this._statusBarItem.command = 'ccGui.newSession';
+    this._statusBarItem.command = 'ccgc.newSession';
     this._statusBarItem.tooltip = 'CC GUI';
     context.subscriptions.push(this._statusBarItem);
     this._updateStatusBarItem('Idle');
@@ -796,7 +799,7 @@ export class BridgeServer {
 
   /**
    * Kill the current ai-bridge daemon and start a new one with the configured Node.
-   * Must be called after `ccGui.nodePath` changes — otherwise chat keeps using
+   * Must be called after `ccgc.nodePath` changes — otherwise chat keeps using
    * the old Node process while settings only show a version warning.
    */
   private _restartBridgeDaemon(): void {
@@ -2034,20 +2037,20 @@ export class BridgeServer {
   }
 
   /**
-   * Gate Output Channel writes via `ccGui.enableDebugLog` (default: false).
+   * Gate Output Channel writes via `ccgc.enableDebugLog` (default: false).
    * When disabled, the gated facade's append* is a no-op so normal use stays quiet.
    */
   private _applyDebugLogSetting(fromConfigChange: boolean): void {
     const enabled =
-      vscode.workspace.getConfiguration('ccGui').get<boolean>('enableDebugLog') === true;
+      vscode.workspace.getConfiguration('ccgc').get<boolean>('enableDebugLog') === true;
     this._debugLogEnabled = enabled;
     // Drive view/title menu visibility for openDevTools (package.json when clause).
-    void vscode.commands.executeCommand('setContext', 'ccGui.enableDebugLog', enabled);
+    void vscode.commands.executeCommand('setContext', 'ccgc.enableDebugLog', enabled);
     if (enabled) {
       // Always stamp a marker when the gate opens — including cold start with a
       // persisted ON setting — so users do not need to toggle the switch to verify.
       // Use force writer (not the gated facade) so the marker is never dropped.
-      this._logAppendLine(`[CC GUI] Debug log enabled (ccGui.enableDebugLog) at ${new Date().toISOString()}`);
+      this._logAppendLine(`[CC GUI] Debug log enabled (ccgc.enableDebugLog) at ${new Date().toISOString()}`);
       // Select this channel in the Output panel. Without show(), dispose+recreate
       // can leave the panel stuck on a disposed/empty view even though logs write.
       try {
@@ -2056,7 +2059,7 @@ export class BridgeServer {
         // ignore UI failures
       }
     } else if (fromConfigChange) {
-      this._logAppendLine('[CC GUI] Debug log disabled (ccGui.enableDebugLog)');
+      this._logAppendLine('[CC GUI] Debug log disabled (ccgc.enableDebugLog)');
     }
   }
 

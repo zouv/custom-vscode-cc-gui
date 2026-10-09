@@ -1,7 +1,7 @@
 {
   "name": "custom-vscode-cc-gui",
-  "displayName": "CCGUI / CC GUI（custom fork · Claude Codex OpenCode Kimi）",
-  "description": "CCGUI / CC GUI — independent open-source GUI for Claude Code, Codex, OpenCode, Kimi, Grok and more (unofficial)",
+  "displayName": "CC GUI (Custom)",
+  "description": "CC GUI (Custom) — independent open-source GUI for Claude Code, Codex, OpenCode, Kimi, Grok and more (unofficial custom fork)",
   "version": "0.1.5-custom.1",
   "publisher": "zouv",
   "author": {
@@ -53,201 +53,201 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "cc-gui-activity",
-          "title": "%ccGui.viewsContainers.activitybar.title%",
+          "id": "ccgc-activity",
+          "title": "%ccgc.viewsContainers.activitybar.title%",
           "icon": "media/icon-activity.svg"
         }
       ],
       "secondarySidebar": [
         {
-          "id": "cc-gui-secondary",
-          "title": "%ccGui.viewsContainers.secondarySidebar.title%",
+          "id": "ccgc-secondary",
+          "title": "%ccgc.viewsContainers.secondarySidebar.title%",
           "icon": "media/icon-outline.svg"
         }
       ]
     },
     "views": {
-      "cc-gui-activity": [
+      "ccgc-activity": [
         {
           "type": "webview",
-          "id": "ccGui.mainView",
-          "name": "%ccGui.views.mainView.name%"
+          "id": "ccgc.mainView",
+          "name": "%ccgc.views.mainView.name%"
         }
       ],
-      "cc-gui-secondary": [
+      "ccgc-secondary": [
         {
           "type": "webview",
-          "id": "ccGui.secondaryView",
-          "name": "%ccGui.views.secondaryView.name%"
+          "id": "ccgc.secondaryView",
+          "name": "%ccgc.views.secondaryView.name%"
         }
       ]
     },
     "commands": [
       {
-        "command": "ccGui.openPanel",
-        "title": "%ccGui.command.openPanel.title%",
-        "category": "%ccGui.command.category%",
+        "command": "ccgc.openPanel",
+        "title": "%ccgc.command.openPanel.title%",
+        "category": "%ccgc.command.category%",
         "icon": {
           "light": "media/icon-outline.svg",
           "dark": "media/icon-outline.svg"
         }
       },
       {
-        "command": "ccGui.newSession",
-        "title": "%ccGui.command.newSession.title%",
-        "category": "%ccGui.command.category%",
+        "command": "ccgc.newSession",
+        "title": "%ccgc.command.newSession.title%",
+        "category": "%ccgc.command.category%",
         "icon": "$(add)"
       },
       {
-        "command": "ccGui.renameActiveChatTab",
-        "title": "%ccGui.command.renameActiveChatTab.title%",
-        "category": "%ccGui.command.category%",
+        "command": "ccgc.renameActiveChatTab",
+        "title": "%ccgc.command.renameActiveChatTab.title%",
+        "category": "%ccgc.command.category%",
         "icon": "$(edit)"
       },
       {
-        "command": "ccGui.openDevTools",
-        "title": "%ccGui.command.openDevTools.title%",
-        "category": "%ccGui.command.category%",
+        "command": "ccgc.openDevTools",
+        "title": "%ccgc.command.openDevTools.title%",
+        "category": "%ccgc.command.category%",
         "icon": "$(debug-console)"
       },
       {
-        "command": "ccGui.hidePanel",
-        "title": "%ccGui.command.hidePanel.title%",
-        "category": "%ccGui.command.category%"
+        "command": "ccgc.hidePanel",
+        "title": "%ccgc.command.hidePanel.title%",
+        "category": "%ccgc.command.category%"
       },
       {
-        "command": "ccGui.sendSelection",
-        "title": "%ccGui.command.sendSelection.title%",
-        "category": "%ccGui.command.category%"
+        "command": "ccgc.sendSelection",
+        "title": "%ccgc.command.sendSelection.title%",
+        "category": "%ccgc.command.category%"
       },
       {
-        "command": "ccGui.copySelectionReference",
-        "title": "%ccGui.command.copySelectionReference.title%",
-        "category": "%ccGui.command.category%"
+        "command": "ccgc.copySelectionReference",
+        "title": "%ccgc.command.copySelectionReference.title%",
+        "category": "%ccgc.command.category%"
       },
       {
-        "command": "ccGui.sendFilePath",
-        "title": "%ccGui.command.sendFilePath.title%",
-        "category": "%ccGui.command.category%"
+        "command": "ccgc.sendFilePath",
+        "title": "%ccgc.command.sendFilePath.title%",
+        "category": "%ccgc.command.category%"
       },
       {
-        "command": "ccGui.generateCommitMessage",
-        "title": "%ccGui.command.generateCommitMessage.title%",
-        "category": "%ccGui.command.category%",
+        "command": "ccgc.generateCommitMessage",
+        "title": "%ccgc.command.generateCommitMessage.title%",
+        "category": "%ccgc.command.category%",
         "icon": "$(git-commit)"
       },
       {
-        "command": "ccGui.quickFixWithClaude",
-        "title": "%ccGui.command.quickFixWithClaude.title%",
-        "category": "%ccGui.command.category%"
+        "command": "ccgc.quickFixWithClaude",
+        "title": "%ccgc.command.quickFixWithClaude.title%",
+        "category": "%ccgc.command.category%"
       },
       {
-        "command": "ccGui.saveSessionTemplate",
-        "title": "%ccGui.command.saveSessionTemplate.title%",
-        "category": "%ccGui.command.category%"
+        "command": "ccgc.saveSessionTemplate",
+        "title": "%ccgc.command.saveSessionTemplate.title%",
+        "category": "%ccgc.command.category%"
       },
       {
-        "command": "ccGui.createSessionFromTemplate",
-        "title": "%ccGui.command.createSessionFromTemplate.title%",
-        "category": "%ccGui.command.category%"
+        "command": "ccgc.createSessionFromTemplate",
+        "title": "%ccgc.command.createSessionFromTemplate.title%",
+        "category": "%ccgc.command.category%"
       },
       {
-        "command": "ccGui.runSetupWizard",
-        "title": "%ccGui.command.runSetupWizard.title%",
-        "category": "%ccGui.command.category%"
+        "command": "ccgc.runSetupWizard",
+        "title": "%ccgc.command.runSetupWizard.title%",
+        "category": "%ccgc.command.category%"
       }
     ],
     "menus": {
       "editor/title": [
         {
-          "command": "ccGui.openPanel",
+          "command": "ccgc.openPanel",
           "group": "navigation@100"
         }
       ],
       "editor/context": [
         {
-          "command": "ccGui.sendSelection",
+          "command": "ccgc.sendSelection",
           "when": "editorHasSelection",
-          "group": "ccGui@1"
+          "group": "ccgc@1"
         },
         {
-          "command": "ccGui.copySelectionReference",
+          "command": "ccgc.copySelectionReference",
           "when": "editorHasSelection",
-          "group": "ccGui@2"
+          "group": "ccgc@2"
         },
         {
-          "command": "ccGui.sendFilePath",
-          "group": "ccGui@3"
+          "command": "ccgc.sendFilePath",
+          "group": "ccgc@3"
         }
       ],
       "explorer/context": [
         {
-          "command": "ccGui.sendFilePath",
-          "group": "ccGui@1"
+          "command": "ccgc.sendFilePath",
+          "group": "ccgc@1"
         }
       ],
       "editor/title/context": [
         {
-          "command": "ccGui.sendFilePath",
-          "group": "ccGui@1"
+          "command": "ccgc.sendFilePath",
+          "group": "ccgc@1"
         }
       ],
       "scm/title": [
         {
-          "command": "ccGui.generateCommitMessage",
+          "command": "ccgc.generateCommitMessage",
           "group": "navigation@50",
           "when": "scmProvider == git"
         },
         {
-          "command": "ccGui.generateCommitMessage",
-          "group": "1_ccgui@1",
+          "command": "ccgc.generateCommitMessage",
+          "group": "1_ccgc@1",
           "when": "scmProvider == git"
         }
       ],
       "view/title": [
         {
-          "command": "ccGui.newSession",
-          "when": "view == ccGui.mainView || view == ccGui.secondaryView",
+          "command": "ccgc.newSession",
+          "when": "view == ccgc.mainView || view == ccgc.secondaryView",
           "group": "navigation"
         },
         {
-          "command": "ccGui.openDevTools",
-          "when": "ccGui.enableDebugLog && (view == ccGui.mainView || view == ccGui.secondaryView)",
+          "command": "ccgc.openDevTools",
+          "when": "ccgc.enableDebugLog && (view == ccgc.mainView || view == ccgc.secondaryView)",
           "group": "navigation"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "ccGui.sendSelection",
+        "command": "ccgc.sendSelection",
         "key": "ctrl+alt+k",
         "mac": "cmd+alt+k",
         "when": "editorHasSelection"
       },
       {
-        "command": "ccGui.quickFixWithClaude",
+        "command": "ccgc.quickFixWithClaude",
         "key": "ctrl+shift+q",
         "mac": "cmd+shift+q",
         "when": "editorTextFocus"
       }
     ],
     "configuration": {
-      "title": "%ccGui.configuration.title%",
+      "title": "%ccgc.configuration.title%",
       "properties": {
-        "ccGui.nodePath": {
+        "ccgc.nodePath": {
           "type": "string",
           "default": "",
-          "description": "%ccGui.configuration.nodePath.description%"
+          "description": "%ccgc.configuration.nodePath.description%"
         },
-        "ccGui.autoSyncActiveFile": {
+        "ccgc.autoSyncActiveFile": {
           "type": "boolean",
           "default": true,
-          "description": "%ccGui.configuration.autoSyncActiveFile.description%"
+          "description": "%ccgc.configuration.autoSyncActiveFile.description%"
         },
-        "ccGui.enableDebugLog": {
+        "ccgc.enableDebugLog": {
           "type": "boolean",
           "default": false,
-          "description": "%ccGui.configuration.enableDebugLog.description%"
+          "description": "%ccgc.configuration.enableDebugLog.description%"
         }
       }
     }
@@ -261,6 +261,7 @@
     "build:webview": "cd webview && npm run build",
     "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --watch",
     "dev": "npm run watch",
+    "dev:host": "node CUSTOMIZATIONS/scripts/dev-host.mjs",
     "test:ext": "node --experimental-strip-types --no-warnings --test 'src/__tests__/**/*.test.mts'"
   },
   "devDependencies": {

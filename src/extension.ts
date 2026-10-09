@@ -1,3 +1,6 @@
+// [CUSTOM-BEGIN] CUSTOM-20261009-003 - 全局命名空间重命名 ccGui.* → ccgc.*：本文件内的命令 id / 视图 id / 配置键 / 上下文键 / 输出通道名已改名，好与上游 vscode-cc-gui 同时安装不再冲突。
+// 上游合并后若本文件出现新的 ccGui.* 引用，需按 registry.md 的命名空间映射重新应用。
+// [CUSTOM-END] CUSTOM-20261009-003
 import * as vscode from 'vscode';
 import { CcGuiPanel } from './panel';
 import { BridgeServer } from './bridge';
@@ -22,9 +25,9 @@ export function activate(context: vscode.ExtensionContext) {
   const webviewViewOptions = { webviewOptions: { retainContextWhenHidden: true } };
   context.subscriptions.push(
     // Left Activity Bar (solid icon)
-    vscode.window.registerWebviewViewProvider('ccGui.mainView', panel, webviewViewOptions),
+    vscode.window.registerWebviewViewProvider('ccgc.mainView', panel, webviewViewOptions),
     // Right Secondary Side Bar (outline icon)
-    vscode.window.registerWebviewViewProvider('ccGui.secondaryView', panel, webviewViewOptions)
+    vscode.window.registerWebviewViewProvider('ccgc.secondaryView', panel, webviewViewOptions)
   );
 
   // Register Quick Fix Code Action provider
@@ -37,23 +40,23 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('ccGui.openPanel', async () => {
+    vscode.commands.registerCommand('ccgc.openPanel', async () => {
       // Focus primary Activity Bar webview (left sidebar).
-      await vscode.commands.executeCommand('ccGui.mainView.focus');
+      await vscode.commands.executeCommand('ccgc.mainView.focus');
     }),
 
-    vscode.commands.registerCommand('ccGui.newSession', () => {
+    vscode.commands.registerCommand('ccgc.newSession', () => {
       panel.openChatTab();
     }),
 
-    vscode.commands.registerCommand('ccGui.renameActiveChatTab', async () => {
+    vscode.commands.registerCommand('ccgc.renameActiveChatTab', async () => {
       await panel.renameActiveChatTab();
     }),
 
-    vscode.commands.registerCommand('ccGui.openDevTools', async () => {
+    vscode.commands.registerCommand('ccgc.openDevTools', async () => {
       // Same gate as view/title visibility: only when debug log is enabled.
       const enabled =
-        vscode.workspace.getConfiguration('ccGui').get<boolean>('enableDebugLog') === true;
+        vscode.workspace.getConfiguration('ccgc').get<boolean>('enableDebugLog') === true;
       if (!enabled) {
         void vscode.window.showInformationMessage(
           'Enable “CC GUI: Enable Debug Log” in settings to open Webview Developer Tools.'
@@ -67,22 +70,22 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }),
 
-    vscode.commands.registerCommand('ccGui.hidePanel', async () => {
+    vscode.commands.registerCommand('ccgc.hidePanel', async () => {
       await vscode.commands.executeCommand('workbench.action.closeSidebar');
     }),
 
-    vscode.commands.registerCommand('ccGui.sendSelection', async () => {
+    vscode.commands.registerCommand('ccgc.sendSelection', async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) return;
       if (editor.selection.isEmpty) {
-        await vscode.commands.executeCommand('ccGui.mainView.focus');
+        await vscode.commands.executeCommand('ccgc.mainView.focus');
         return;
       }
       insertIntoChatInput(bridge, buildSelectionReference(editor));
-      await vscode.commands.executeCommand('ccGui.mainView.focus');
+      await vscode.commands.executeCommand('ccgc.mainView.focus');
     }),
 
-    vscode.commands.registerCommand('ccGui.copySelectionReference', async () => {
+    vscode.commands.registerCommand('ccgc.copySelectionReference', async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor || editor.selection.isEmpty) return;
       const reference = buildSelectionReference(editor);
@@ -90,7 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage('AI reference copied');
     }),
 
-    vscode.commands.registerCommand('ccGui.sendFilePath', async (...args: unknown[]) => {
+    vscode.commands.registerCommand('ccgc.sendFilePath', async (...args: unknown[]) => {
       const filePaths = resolveCommandFilePaths(args);
       if (filePaths.length === 0) {
         const editor = vscode.window.activeTextEditor;
@@ -98,10 +101,10 @@ export function activate(context: vscode.ExtensionContext) {
         filePaths.push(editor.document.uri.fsPath);
       }
       insertIntoChatInput(bridge, filePaths.map((filePath) => `@${filePath}`).join(' '));
-      await vscode.commands.executeCommand('ccGui.mainView.focus');
+      await vscode.commands.executeCommand('ccgc.mainView.focus');
     }),
 
-    vscode.commands.registerCommand('ccGui.generateCommitMessage', async () => {
+    vscode.commands.registerCommand('ccgc.generateCommitMessage', async () => {
       const workspacePath = getWorkspacePath();
       if (!workspacePath) {
         vscode.window.showWarningMessage('No workspace folder open');
@@ -137,14 +140,14 @@ export function activate(context: vscode.ExtensionContext) {
               bridge.broadcast('js_eval',
                 `window.insertCodeSnippetAtCursor && window.insertCodeSnippetAtCursor(${JSON.stringify(result.commitMessage)})`
               );
-              await vscode.commands.executeCommand('ccGui.mainView.focus');
+              await vscode.commands.executeCommand('ccgc.mainView.focus');
               return;
             }
 
             bridge.broadcast('js_eval',
               `window.insertCodeSnippetAtCursor && window.insertCodeSnippetAtCursor(${JSON.stringify(result.prompt)})`
             );
-            await vscode.commands.executeCommand('ccGui.mainView.focus');
+            await vscode.commands.executeCommand('ccgc.mainView.focus');
             vscode.window.showWarningMessage(`Commit message generation fell back to chat prompt: ${result.error ?? 'unknown error'}`);
           } catch (error: any) {
             vscode.window.showWarningMessage(error?.message || String(error));
@@ -153,7 +156,7 @@ export function activate(context: vscode.ExtensionContext) {
       );
     }),
 
-    vscode.commands.registerCommand('ccGui.quickFixWithClaude', async (input?: vscode.Diagnostic | QuickFixCommandArgs) => {
+    vscode.commands.registerCommand('ccgc.quickFixWithClaude', async (input?: vscode.Diagnostic | QuickFixCommandArgs) => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) return;
       const targetUri = input && 'uri' in input ? input.uri : editor.document.uri;
@@ -173,14 +176,14 @@ export function activate(context: vscode.ExtensionContext) {
       bridge.broadcast('js_eval',
         `window.insertCodeSnippetAtCursor && window.insertCodeSnippetAtCursor(${JSON.stringify(prompt)})`
       );
-      await vscode.commands.executeCommand('ccGui.mainView.focus');
+      await vscode.commands.executeCommand('ccgc.mainView.focus');
     }),
 
-    vscode.commands.registerCommand('ccGui.saveSessionTemplate', async () => {
+    vscode.commands.registerCommand('ccgc.saveSessionTemplate', async () => {
       await sessionTemplates.saveCurrentSessionAsTemplate();
     }),
 
-    vscode.commands.registerCommand('ccGui.createSessionFromTemplate', async () => {
+    vscode.commands.registerCommand('ccgc.createSessionFromTemplate', async () => {
       await sessionTemplates.createSessionFromTemplate();
     })
   );

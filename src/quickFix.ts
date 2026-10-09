@@ -1,3 +1,6 @@
+// [CUSTOM-BEGIN] CUSTOM-20261009-003 - 全局命名空间重命名 ccGui.* → ccgc.*：本文件内的命令 id / 视图 id / 配置键 / 上下文键 / 输出通道名已改名，好与上游 vscode-cc-gui 同时安装不再冲突。
+// 上游合并后若本文件出现新的 ccGui.* 引用，需按 registry.md 的命名空间映射重新应用。
+// [CUSTOM-END] CUSTOM-20261009-003
 import * as vscode from 'vscode';
 import { BridgeServer } from './bridge';
 
@@ -22,7 +25,7 @@ export class ClaudeQuickFixProvider implements vscode.CodeActionProvider {
         vscode.CodeActionKind.QuickFix
       );
       action.command = {
-        command: 'ccGui.quickFixWithClaude',
+        command: 'ccgc.quickFixWithClaude',
         title: 'Fix with CC GUI',
         arguments: [{ uri: document.uri, diagnostic: diag } satisfies QuickFixCommandArgs],
       };
